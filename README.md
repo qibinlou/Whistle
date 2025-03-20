@@ -1,4 +1,4 @@
-<img src="Whistle-icon.jpeg" width="200" alt="Whistle app icon" align="left"/>
+<img src="whistle-icon.jpeg" width="200" alt="Whistle app icon" align="left"/>
 
 <div style="margin-left: 20px;">
 <h1>Whistle</h1>
@@ -11,14 +11,12 @@
 
 <div align="center">
 <a href="https://github.com/qibinlou/Whistle/releases"><img src="https://img.shields.io/github/downloads/qibinlou/Whistle/total.svg?style=flat" alt="downloads"/></a>
-
 <a href="https://github.com/qibinlou/Whistle/releases"><img src="https://img.shields.io/github/release-pre/qibinlou/Whistle.svg?style=flat" alt="latest version"/></a>
-
 <a href="https://github.com/qibinlou/Whistle/blob/master/LICENSE"><img src="https://img.shields.io/github/license/qibinlou/Whistle.svg?style=flat" alt="license"/></a>
-
 <a href="https://github.com/qibinlou/Whistle"><img src="https://img.shields.io/badge/platform-macOS-blue.svg?style=flat" alt="platform"/></a>
 </div>
 
+------
 
 ## Features
 
