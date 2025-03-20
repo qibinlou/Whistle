@@ -1,12 +1,30 @@
-# Whistle
+<img src="Whistle-icon.jpeg" width="200" alt="Whistle app icon" align="left"/>
 
-Whistle is an AI-powered dictation tool built for speed, embracing a minimalist design to streamline your writing through seamless speech-to-text conversion. It integrates effortlessly with macOS, using system-wide hotkeys to keep you focused on your work without switching apps.
+<div style="margin-left: 20px;">
+<h1>Whistle</h1>
+<p>Whistle is an AI-powered dictation tool built for speed, embracing a minimalist design to streamline your writing through seamless speech-to-text conversion. It integrates effortlessly with macOS, using system-wide hotkeys to keep you focused on your work without switching apps.
+</p>
+<a href="https://github.com/qibinlou/Whistle/releases"><img src=".github/macos_badge_noborder.png" width="175" alt="Download for macOS"/></a>
+</div>
+
+<br/><br/>
+
+<div align="center">
+<a href="https://github.com/qibinlou/Whistle/releases"><img src="https://img.shields.io/github/downloads/qibinlou/Whistle/total.svg?style=flat" alt="downloads"/></a>
+
+<a href="https://github.com/qibinlou/Whistle/releases"><img src="https://img.shields.io/github/release-pre/qibinlou/Whistle.svg?style=flat" alt="latest version"/></a>
+
+<a href="https://github.com/qibinlou/Whistle/blob/master/LICENSE"><img src="https://img.shields.io/github/license/qibinlou/Whistle.svg?style=flat" alt="license"/></a>
+
+<a href="https://github.com/qibinlou/Whistle"><img src="https://img.shields.io/badge/platform-macOS-blue.svg?style=flat" alt="platform"/></a>
+</div>
+
 
 ## Features
 
 - **AI-Powered Dictation**: Convert your speech to text quickly and accurately, powered by advanced AI models such as OpenAI's Whisper model
 - **System-Wide Hotkeys**: Activate dictation from anywhere with customizable keyboard shortcuts
-- **Configurable Settings**: 
+- **Configurable Settings**:
   - Enable/disable dictation
   - Select from various keyboard shortcuts (F5, Fn+F5, ⌘+F5, ⌥+D, with more options to come)
   - Play dictation sounds
@@ -30,10 +48,9 @@ Whistle can be configured through the Settings screen:
 - **Play Dictation Sounds**: Toggle audio feedback for dictation events
 - **Pause Music During Dictation**: Automatically pause music playback when dictation is active
 
-
 ## Privacy
-Bring your own API key for best performance and minimized trust. No logging, no tracking, no data collection.
 
+Bring your own API key for best performance and minimized trust. No logging, no tracking, no data collection.
 
 ## Installation
 
@@ -58,11 +75,13 @@ Bring your own API key for best performance and minimized trust. No logging, no 
    ```
 
 ### Windows or Linux Support
+
 Currently, Whistle is only available for macOS. However, with the Flutter framework, contributions to add support for Windows or Linux are feasible and welcome! If you're interested in helping out, please check the issues and pull requests for more information.
 
 ## Authors
+
 * [Leo Lou](https://www.louqibin.me)
 
 ## License
-MIT
 
+MIT
