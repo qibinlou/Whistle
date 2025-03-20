@@ -60,6 +60,9 @@ Bring your own API key for best performance and minimized trust. No logging, no 
 ### Windows or Linux Support
 Currently, Whistle is only available for macOS. However, with the Flutter framework, contributions to add support for Windows or Linux are feasible and welcome! If you're interested in helping out, please check the issues and pull requests for more information.
 
+## Authors
+* [Leo Lou](https://www.louqibin.me)
+
 ## License
 MIT
 
