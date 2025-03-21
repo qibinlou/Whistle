@@ -18,6 +18,10 @@
 
 ------
 
+
+🆕 Just upgraded to OpenAI's latest and best transcription model [`gpt-4o-transcribe`](https://openai.com/index/introducing-our-next-generation-audio-models/).
+
+
 ## Features
 
 - **AI-Powered Dictation**: Convert your speech to text quickly and accurately, powered by advanced AI models such as OpenAI's Whisper model
