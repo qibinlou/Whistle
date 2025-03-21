@@ -24,7 +24,7 @@
 
 ## Features
 
-- **AI-Powered Dictation**: Convert your speech to text quickly and accurately, powered by advanced AI models such as OpenAI's Whisper model
+- **AI-Powered Dictation**: Convert your speech to text quickly and accurately, powered by advanced AI models such as OpenAI's Whisper model and `gpt-4o-transcribe` model
 - **System-Wide Hotkeys**: Activate dictation from anywhere with customizable keyboard shortcuts
 - **Configurable Settings**:
   - Enable/disable dictation
@@ -36,7 +36,7 @@
 ## How to Use
 
 1. Launch the Whistle application
-2. Enter your OpenAI API key in the settings, make sure you have a valid key for the Whisper model and that your billing is set up correctly
+2. Enter your OpenAI API key in the settings, make sure you have a valid key for the `gpt-4o-transcribe` model and that your billing is set up correctly
 3. Configure your preferred keyboard shortcut in Settings and use the configured hotkey to activate dictation
 4. You need to approve the microphone access prompt the first time you use it, and accept the macOS accessibility permission to allow Whistle to control your keyboard, so you can stay focused on your tasks
 5. Speak clearly, and your words will be converted to text in the active application window
