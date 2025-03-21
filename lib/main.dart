@@ -257,7 +257,7 @@ class _MyHomePageState extends State<MyHomePage>
 
     final url = Uri.parse('https://api.openai.com/v1/audio/transcriptions');
     final request = http.MultipartRequest('POST', url)
-      ..fields['model'] = 'whisper-1'
+      ..fields['model'] = 'gpt-4o-transcribe'
       ..fields['prompt'] =
           'Ensure that grammar is corrected where necessary and punctuation is added to create a clean and polished transcript.'
       ..files.add(await http.MultipartFile.fromPath('file', filePath));
