@@ -74,6 +74,9 @@ class _MyHomePageState extends State<MyHomePage>
   static const _statusBarChannel =
       MethodChannel('com.normadit.whistle/StatusBarController');
 
+      static const _mediaCenterChannel =
+      MethodChannel('com.normadit.whistle/MediaCenter');
+
   @override
   void initState() {
     super.initState();
@@ -152,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage>
 
         if (pauseMusicDuringDictation) {
           try {
-            await _statusBarChannel.invokeMethod('playPause');
+            await _mediaCenterChannel.invokeMethod('playPause');
             print('Media paused via StatusBarController');
           } catch (e) {
             print('Failed to pause media: $e');
@@ -190,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage>
       if (pauseMusicDuringDictation) {
         try {
           // Use StatusBarController's exposed API to resume media
-          await _statusBarChannel.invokeMethod('playPause');
+          await _mediaCenterChannel.invokeMethod('playPause');
           print('Media resumed via StatusBarController');
         } catch (e) {
           print('Failed to resume media: $e');

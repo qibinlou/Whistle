@@ -26,6 +26,10 @@ class AppDelegate: FlutterAppDelegate {
     popover.contentViewController = controller  //set the content view controller for the popover to flutter view controller
     statusBar = StatusBarController.init(popover, controller)
 
+    // Register MediaCenterController as a Flutter plugin
+    MediaCenterController.register(
+      with: controller.engine.registrar(forPlugin: "MediaCenterController"))
+
     let keyboardControllerChannel = FlutterMethodChannel(
       name: "com.normadit.whistle/keyboardController",
       binaryMessenger: controller.engine.binaryMessenger)

@@ -1,5 +1,4 @@
 import AppKit
-import Carbon  // for NX key constants
 import FlutterMacOS
 
 class StatusBarController {
@@ -43,9 +42,6 @@ class StatusBarController {
           self?.updateStatusBarIcon(isRecording: isRecording)
         }
         result(nil)
-      case "playPause":
-        self?.sendMediaPlayPause()
-        result(nil)
       default:
         result(FlutterMethodNotImplemented)
       }
@@ -74,33 +70,6 @@ class StatusBarController {
     image?.size = size
     image?.isTemplate = isTemplate
     return image
-  }
-
-  private func sendMediaPlayPause() {
-    // Direct media key handling for status bar functionality
-    let playPauseUsage: Int = Int(NX_KEYTYPE_PLAY)
-
-    func postEvent(down: Bool) {
-      let flags = NSEvent.ModifierFlags(rawValue: down ? 0xA00 : 0xB00)
-      let data1 = (playPauseUsage << 16) | ((down ? 0xA : 0xB) << 8)
-
-      if let event = NSEvent.otherEvent(
-        with: .systemDefined,
-        location: .zero,
-        modifierFlags: flags,
-        timestamp: ProcessInfo.processInfo.systemUptime,
-        windowNumber: 0,
-        context: nil,
-        subtype: 8,
-        data1: data1,
-        data2: -1
-      ) {
-        event.cgEvent?.post(tap: .cghidEventTap)
-      }
-    }
-
-    postEvent(down: true)
-    postEvent(down: false)
   }
 
 }

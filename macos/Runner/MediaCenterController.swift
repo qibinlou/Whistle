@@ -2,14 +2,15 @@ import Carbon
 import Cocoa
 import FlutterMacOS
 
-/// Independent media keys plugin for Flutter-specific media control
-/// Maintains separation from StatusBarController for clean architecture
-public class MediaKeysPlugin: NSObject, FlutterPlugin {
+/// Media center controller for handling all media-related operations
+/// Manages media key events and provides a centralized interface for media control
+public class MediaCenterController: NSObject, FlutterPlugin {
+
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
-      name: "com.normadit.whistle/media_keys",
+      name: "com.normadit.whistle/MediaCenter",
       binaryMessenger: registrar.messenger)
-    let instance = MediaKeysPlugin()
+    let instance = MediaCenterController()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
