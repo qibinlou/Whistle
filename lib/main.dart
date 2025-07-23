@@ -11,7 +11,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:audio_session/audio_session.dart';
 
 import './keyboard_controller.dart';
 import 'chinese_utils.dart';
@@ -153,15 +152,10 @@ class _MyHomePageState extends State<MyHomePage>
 
         if (pauseMusicDuringDictation) {
           try {
-            // Configure audio session
-            final session = await AudioSession.instance;
-            await session.configure(AudioSessionConfiguration.speech());
-
-            // Activate the session (this will interrupt other audio)
-            await session.setActive(true);
-            print('Audio session activated - other media paused/ducked');
+            await _statusBarChannel.invokeMethod('playPause');
+            print('Media paused via StatusBarController');
           } catch (e) {
-            print('Failed to configure audio session: $e');
+            print('Failed to pause media: $e');
           }
         }
 
@@ -195,11 +189,11 @@ class _MyHomePageState extends State<MyHomePage>
           prefs.getBool('pauseMusicDuringDictation') ?? true;
       if (pauseMusicDuringDictation) {
         try {
-          final session = await AudioSession.instance;
-          await session.setActive(false);
-          print('Audio session deactivated - other media can resume');
+          // Use StatusBarController's exposed API to resume media
+          await _statusBarChannel.invokeMethod('playPause');
+          print('Media resumed via StatusBarController');
         } catch (e) {
-          print('Failed to deactivate audio session: $e');
+          print('Failed to resume media: $e');
         }
       }
 
@@ -212,6 +206,9 @@ class _MyHomePageState extends State<MyHomePage>
 
   Future<String> _transcribeAudio(String filePath) async {
     print('Transcribing audio input: $filePath');
+    
+    // Temporarily disabled for debugging - remove this line to enable transcription
+    // return "Debugging... This is a dummy transcription for local dev.";
 
     // Load the OpenAI API key from SharedPreferences
     final prefs = await SharedPreferences.getInstance();

@@ -1,4 +1,5 @@
 import AppKit
+import Carbon  // for NX key constants
 import FlutterMacOS
 
 class StatusBarController {
@@ -11,7 +12,7 @@ class StatusBarController {
     self.popover = popover
     self.flutterViewController = flutterViewController
 
-    print("Initilizae StatusBarController...")
+    print("Initialize StatusBarController...")
 
     statusBar = NSStatusBar.init()
     statusItem = statusBar.statusItem(withLength: 22.0)
@@ -42,6 +43,9 @@ class StatusBarController {
           self?.updateStatusBarIcon(isRecording: isRecording)
         }
         result(nil)
+      case "playPause":
+        self?.sendMediaPlayPause()
+        result(nil)
       default:
         result(FlutterMethodNotImplemented)
       }
@@ -57,8 +61,8 @@ class StatusBarController {
 
   private func updateStatusBarIcon(isRecording: Bool) {
     DispatchQueue.main.async {
-      if let statusBarButon = self.statusItem.button {
-        statusBarButon.image = self.createLogoImage(
+      if let statusBarButton = self.statusItem.button {
+        statusBarButton.image = self.createLogoImage(
           named: isRecording ? "Microphone-Recording" : "Microphone-Inactive",
           size: NSSize(width: 22.0, height: 22.0), isTemplate: true)
       }
@@ -70,6 +74,33 @@ class StatusBarController {
     image?.size = size
     image?.isTemplate = isTemplate
     return image
+  }
+
+  private func sendMediaPlayPause() {
+    // Direct media key handling for status bar functionality
+    let playPauseUsage: Int = Int(NX_KEYTYPE_PLAY)
+
+    func postEvent(down: Bool) {
+      let flags = NSEvent.ModifierFlags(rawValue: down ? 0xA00 : 0xB00)
+      let data1 = (playPauseUsage << 16) | ((down ? 0xA : 0xB) << 8)
+
+      if let event = NSEvent.otherEvent(
+        with: .systemDefined,
+        location: .zero,
+        modifierFlags: flags,
+        timestamp: ProcessInfo.processInfo.systemUptime,
+        windowNumber: 0,
+        context: nil,
+        subtype: 8,
+        data1: data1,
+        data2: -1
+      ) {
+        event.cgEvent?.post(tap: .cghidEventTap)
+      }
+    }
+
+    postEvent(down: true)
+    postEvent(down: false)
   }
 
 }
