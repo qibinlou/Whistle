@@ -12,10 +12,16 @@ final class SoundController {
   SoundController._();
 
   static Future<void> playStartSound() async {
-    _audioPlayer.play(DeviceFileSource(SOUND_START));
+    return _audioPlayer.play(
+      DeviceFileSource(SOUND_START),
+      mode: PlayerMode.lowLatency,
+    );
   }
 
   static Future<void> playStopSound() async {
-    _audioPlayer.play(DeviceFileSource(SOUND_STOP));
+    return _audioPlayer.play(
+      DeviceFileSource(SOUND_STOP),
+      mode: PlayerMode.lowLatency,
+    );
   }
 }

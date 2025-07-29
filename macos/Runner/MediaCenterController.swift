@@ -24,7 +24,12 @@ public class MediaCenterController: NSObject, FlutterPlugin {
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
     case "isAudioPlaying":
-      isAudioAudible(completion: result) 
+      isAudioAudible(completion: result)
+    case "muteSystemAudio":
+      if let shouldMute = call.arguments as? Bool {
+        muteSystemAudio(mute: shouldMute)
+      }
+      result(nil)
     case "playPause":
       sendPlayPause()
       result(nil)
@@ -267,6 +272,94 @@ public class MediaCenterController: NSObject, FlutterPlugin {
     }
 
     return isRunning != 0
+  }
+
+  // MARK: - Volume Management
+
+  private var storedVolume: Float = 0.0
+
+  private func muteSystemAudio(mute: Bool) {
+    guard let defaultDevice = getDefaultOutputDevice() else {
+      logInfo("Could not get default output device for volume control")
+      return
+    }
+
+    if mute {
+      // Store current volume before muting
+      if let currentVolume = getDeviceVolume(deviceID: defaultDevice) {
+        storedVolume = currentVolume
+        logInfo("Stored system volume: \(currentVolume)")
+
+        // Mute by setting volume to 0
+        setDeviceVolume(deviceID: defaultDevice, volume: 0.0)
+        logInfo("System audio muted")
+      }
+    } else {
+      // Restore previous volume
+      if storedVolume > 0 {
+        setDeviceVolume(deviceID: defaultDevice, volume: storedVolume)
+        logInfo("System audio unmuted, restored volume to: \(storedVolume)")
+        storedVolume = 0.0
+      }
+    }
+  }
+
+  private func getDefaultOutputDevice() -> AudioDeviceID? {
+    var deviceID = AudioDeviceID(0)
+    var propSize = UInt32(MemoryLayout<AudioDeviceID>.size)
+    var address = AudioObjectPropertyAddress(
+      mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+      mScope: kAudioObjectPropertyScopeGlobal,
+      mElement: kAudioObjectPropertyElementMaster
+    )
+
+    let status = AudioObjectGetPropertyData(
+      AudioObjectID(kAudioObjectSystemObject),
+      &address, 0, nil, &propSize, &deviceID)
+
+    if status != noErr || deviceID == kAudioObjectUnknown {
+      logInfo("Failed to get default output device")
+      return nil
+    }
+
+    return deviceID
+  }
+
+  private func getDeviceVolume(deviceID: AudioDeviceID) -> Float? {
+    var volume: Float32 = 0.0
+    var propSize = UInt32(MemoryLayout<Float32>.size)
+    var address = AudioObjectPropertyAddress(
+      mSelector: kAudioDevicePropertyVolumeScalar,
+      mScope: kAudioDevicePropertyScopeOutput,
+      mElement: kAudioObjectPropertyElementMaster
+    )
+
+    let status = AudioObjectGetPropertyData(deviceID, &address, 0, nil, &propSize, &volume)
+
+    if status != noErr {
+      logInfo("Failed to get device volume")
+      return nil
+    }
+
+    return volume
+  }
+
+  private func setDeviceVolume(deviceID: AudioDeviceID, volume: Float) {
+    var newVolume = Float32(volume)
+    let propSize = UInt32(MemoryLayout<Float32>.size)
+    var address = AudioObjectPropertyAddress(
+      mSelector: kAudioDevicePropertyVolumeScalar,
+      mScope: kAudioDevicePropertyScopeOutput,
+      mElement: kAudioObjectPropertyElementMaster
+    )
+
+    let status = AudioObjectSetPropertyData(deviceID, &address, 0, nil, propSize, &newVolume)
+
+    if status != noErr {
+      logInfo("Failed to set device volume to \(volume)")
+    } else {
+      logInfo("Successfully set device volume to \(volume)")
+    }
   }
 
 }

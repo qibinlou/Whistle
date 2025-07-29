@@ -70,11 +70,13 @@ class _MyHomePageState extends State<MyHomePage>
   bool _isRecording = false;
   String? _recordingPath;
   List<String> _transcriptionHistory = []; // Store transcription history
+  bool _hasMutedSystemAudio =
+      false; // Track if we muted system audio during recording
 
   static const _statusBarChannel =
       MethodChannel('com.normadit.whistle/StatusBarController');
 
-      static const _mediaCenterChannel =
+  static const _mediaCenterChannel =
       MethodChannel('com.normadit.whistle/MediaCenter');
 
   @override
@@ -143,23 +145,30 @@ class _MyHomePageState extends State<MyHomePage>
     try {
       if (await _audioRecorder.hasPermission()) {
         final prefs = await SharedPreferences.getInstance();
+
         final playDictationSounds =
             prefs.getBool('playDictationSounds') ?? true;
         if (playDictationSounds) {
           SoundController.playStartSound();
+          await Future.delayed(const Duration(milliseconds: 300));
         }
 
-        // pause music playing
-        final pauseMusicDuringDictation =
+        // mute system audio during dictation
+        final muteMusicDuringDictation =
             prefs.getBool('pauseMusicDuringDictation') ?? true;
 
-        if (pauseMusicDuringDictation) {
+        if (muteMusicDuringDictation) {
           try {
-            await _mediaCenterChannel.invokeMethod('playPause');
-            print('Media paused via StatusBarController');
+            await _mediaCenterChannel.invokeMethod('muteSystemAudio', true);
+            _hasMutedSystemAudio = true; // Mark that we muted system audio
+            print('System audio muted via MediaCenterController');
           } catch (e) {
-            print('Failed to pause media: $e');
+            _hasMutedSystemAudio =
+                false; // Failed to mute, so don't unmute later
+            print('Failed to mute system audio: $e');
           }
+        } else {
+          _hasMutedSystemAudio = false; // Setting disabled, so don't unmute
         }
 
         final tempDir = await getTemporaryDirectory();
@@ -187,18 +196,17 @@ class _MyHomePageState extends State<MyHomePage>
         SoundController.playStopSound();
       }
 
-      // Resume other audio playback
-      final pauseMusicDuringDictation =
-          prefs.getBool('pauseMusicDuringDictation') ?? true;
-      if (pauseMusicDuringDictation) {
+      // Unmute system audio only if we muted it
+      if (_hasMutedSystemAudio) {
         try {
-          // Use StatusBarController's exposed API to resume media
-          await _mediaCenterChannel.invokeMethod('playPause');
-          print('Media resumed via StatusBarController');
+          // Unmute system audio that we previously muted
+          await _mediaCenterChannel.invokeMethod('muteSystemAudio', false);
+          print('System audio unmuted via StatusBarController');
         } catch (e) {
-          print('Failed to resume media: $e');
+          print('Failed to unmute system audio: $e');
         }
       }
+      _hasMutedSystemAudio = false; // Reset the flag
 
       setState(() => _isRecording = false);
       _updateStatusBarIcon();
@@ -209,7 +217,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   Future<String> _transcribeAudio(String filePath) async {
     print('Transcribing audio input: $filePath');
-    
+
     // Temporarily disabled for debugging - remove this line to enable transcription
     // return "Debugging... This is a dummy transcription for local dev.";
 
