@@ -55,23 +55,21 @@ class AppDelegate: FlutterAppDelegate {
   // Function to simulate text input on macOS
   func insertText(text: String) {
     let source = CGEventSource(stateID: .combinedSessionState)
-
-    for char in text {
-      let keyDown = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: true)
-      let keyUp = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: false)
-
-      // Convert Character to [UniChar]
-      let unichars = Array(String(char).utf16)
-      unichars.withUnsafeBufferPointer { buffer in
-        keyDown?.keyboardSetUnicodeString(
-          stringLength: unichars.count, unicodeString: buffer.baseAddress)
-        keyUp?.keyboardSetUnicodeString(
-          stringLength: unichars.count, unicodeString: buffer.baseAddress)
-      }
-
-      keyDown?.post(tap: .cghidEventTap)
-      keyUp?.post(tap: .cghidEventTap)
+    
+    let keyDown = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: true)
+    let keyUp = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: false)
+    
+    // Convert the entire string to [UniChar] array
+    let unichars = Array(text.utf16)
+    unichars.withUnsafeBufferPointer { buffer in
+      keyDown?.keyboardSetUnicodeString(
+        stringLength: unichars.count, unicodeString: buffer.baseAddress)
+      keyUp?.keyboardSetUnicodeString(
+        stringLength: unichars.count, unicodeString: buffer.baseAddress)
     }
+    
+    keyDown?.post(tap: .cghidEventTap)
+    keyUp?.post(tap: .cghidEventTap)
   }
 
 }
