@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:whistle/hotkey_options.dart';
+import 'package:whistle/custom_hotkey_recorder.dart';
 
 class ShortcutsSettingsScreen extends StatefulWidget {
   final Function? onHotkeyChanged;
@@ -16,11 +16,11 @@ class ShortcutsSettingsScreen extends StatefulWidget {
 
 class _ShortcutsSettingsScreenState extends State<ShortcutsSettingsScreen> {
   bool _enableDictation = false;
-  int _selectedHotkeyIndex = 2; // Default to F5 (index 2)
   String _activationMode = 'Push to Talk';
   bool _playDictationSounds = true;
   bool _pauseMusicDuringDictation = true;
   bool _isCheckingShortcut = false;
+  HotkeyOption? _selectedHotkey;
 
   @override
   void initState() {
@@ -30,20 +30,21 @@ class _ShortcutsSettingsScreenState extends State<ShortcutsSettingsScreen> {
 
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
+    final selectedHotkey = await CustomHotkeyManager.getSelectedHotkey();
+
     setState(() {
       _enableDictation = prefs.getBool('enableDictation') ?? false;
-      _selectedHotkeyIndex = prefs.getInt('hotkey_option_index') ?? 2;
       _activationMode = prefs.getString('activationMode') ?? 'Push to Talk';
       _playDictationSounds = prefs.getBool('playDictationSounds') ?? true;
       _pauseMusicDuringDictation =
           prefs.getBool('pauseMusicDuringDictation') ?? true;
+      _selectedHotkey = selectedHotkey;
     });
   }
 
   Future<void> _saveSettings() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('enableDictation', _enableDictation);
-    await prefs.setInt('hotkey_option_index', _selectedHotkeyIndex);
     await prefs.setString('activationMode', _activationMode);
     await prefs.setBool('playDictationSounds', _playDictationSounds);
     await prefs.setBool(
@@ -55,7 +56,7 @@ class _ShortcutsSettingsScreenState extends State<ShortcutsSettingsScreen> {
     }
   }
 
-  Future<bool> _isShortcutAvailable(int optionIndex) async {
+  Future<bool> _isShortcutAvailable(HotkeyOption option) async {
     setState(() {
       _isCheckingShortcut = true;
     });
@@ -63,7 +64,6 @@ class _ShortcutsSettingsScreenState extends State<ShortcutsSettingsScreen> {
     try {
       bool isAvailable = true;
       try {
-        final option = hotkeyOptions[optionIndex];
         final hotKey = HotKey(
           key: option.key,
           modifiers: option.modifiers,
@@ -91,47 +91,134 @@ class _ShortcutsSettingsScreenState extends State<ShortcutsSettingsScreen> {
   }
 
   Future<void> _selectShortcut() async {
-    final result = await showDialog<int>(
+    // Get the currently saved option
+    final savedOption = _selectedHotkey;
+    final result = await showDialog<dynamic>(
       context: context,
       builder: (context) => SimpleDialog(
         title: Text('Select Keyboard Shortcut'),
-        children: List.generate(
-            hotkeyOptions.length,
-            (index) => SimpleDialogOption(
-                  onPressed: () => Navigator.pop(context, index),
-                  child: Text(hotkeyOptions[index].name),
-                )),
+        children: [
+          // Predefined hotkeys
+          for (final option in hotkeyOptions)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, option),
+              child: Text(option.name),
+            ),
+          // Show existing custom hotkey if one is saved
+          if (savedOption != null && savedOption.isCustom)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(context, savedOption),
+              child: Row(
+                children: [
+                  Icon(Icons.star, size: 20, color: Colors.amber),
+                  SizedBox(width: 8),
+                  Expanded(child: Text(savedOption.name)),
+                  IconButton(
+                    icon: Icon(Icons.delete, size: 16, color: Colors.red),
+                    onPressed: () {
+                      Navigator.pop(context, 'deleteCustom');
+                    },
+                  ),
+                ],
+              ),
+            ),
+          // Record new custom hotkey
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(context, 'custom'),
+            child: Row(
+              children: [
+                Icon(Icons.add, size: 20),
+                SizedBox(width: 8),
+                Text('Record Custom Hotkey'),
+              ],
+            ),
+          ),
+        ],
       ),
     );
 
-    if (result != null && result != _selectedHotkeyIndex) {
-      final isAvailable = await _isShortcutAvailable(result);
-
-      if (!isAvailable) {
-        // Show warning that the shortcut is in use
-        await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Shortcut Conflict'),
-            content: Text(
-                'The shortcut "${hotkeyOptions[result].name}" appears to be in use by another application. Please select a different shortcut.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('OK'),
-              ),
-            ],
-          ),
-        );
-      } else {
-        setState(() {
-          _selectedHotkeyIndex = result;
-        });
-        await _saveSettings();
-      }
+    if (result == null) return;
+    if (result == 'custom') {
+      await _recordCustomHotkey();
+    } else if (result == 'deleteCustom') {
+      // Delete and reset
+      await CustomHotkeyManager.saveSelectedHotkey(hotkeyOptions[2]);
+      setState(() { _selectedHotkey = hotkeyOptions[2]; });
+      await _saveSettings();
+    } else if (result is HotkeyOption) {
+      await _selectHotkey(result);
     }
+  }
+
+  Future<void> _selectHotkey(HotkeyOption option) async {
+    // Check if this is the same as currently selected
+    if (_selectedHotkey?.shortcutString == option.shortcutString) return;
+
+    final isAvailable = await _isShortcutAvailable(option);
+
+    if (!isAvailable) {
+      // Show warning that the shortcut is in use
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Shortcut Conflict'),
+          content: Text(
+              'The shortcut "${option.name}" appears to be in use by another application. Please select a different shortcut.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Save the selected hotkey
+      await CustomHotkeyManager.saveSelectedHotkey(option);
+      setState(() {
+        _selectedHotkey = option;
+      });
+      await _saveSettings();
+    }
+  }
+
+  Future<void> _recordCustomHotkey() async {
+    await showDialog(
+      context: context,
+      builder: (context) => CustomHotkeyRecorder(
+        onHotkeyRecorded: (hotkeyOption) async {
+          print('Recording custom hotkey: ${hotkeyOption.shortcutString}');
+
+          // Save the custom hotkey as the selected hotkey
+          await CustomHotkeyManager.saveSelectedHotkey(hotkeyOption);
+
+          setState(() {
+            _selectedHotkey = hotkeyOption;
+          });
+
+          await _saveSettings();
+          Navigator.pop(context);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Custom hotkey saved: ${hotkeyOption.shortcutString}')),
+          );
+        },
+        onCancel: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  String _getSelectedHotkeyName() {
+    if (_selectedHotkey == null) {
+      return 'Loading...';
+    }
+    return _selectedHotkey!.name;
   }
 
   @override
@@ -156,7 +243,7 @@ class _ShortcutsSettingsScreenState extends State<ShortcutsSettingsScreen> {
             ),
             ListTile(
               title: Text('Dictation Keyboard Shortcut'),
-              subtitle: Text(hotkeyOptions[_selectedHotkeyIndex].name),
+              subtitle: Text(_getSelectedHotkeyName()),
               trailing: _isCheckingShortcut
                   ? CircularProgressIndicator(strokeWidth: 2)
                   : Icon(Icons.keyboard),

@@ -91,17 +91,8 @@ class _MyHomePageState extends State<MyHomePage>
   void _setupHotkey() async {
     await hotKeyManager.unregisterAll();
 
-    final prefs = await SharedPreferences.getInstance();
-
-    // Get the stored hotkey option index with default to F5 (index 0)
-    final hotkeyIndex = prefs.getInt('hotkey_option_index') ?? 0;
-
-    // Get the selected hotkey option (with bounds checking)
-    final selectedIndex = hotkeyIndex >= 0 && hotkeyIndex < hotkeyOptions.length
-        ? hotkeyIndex
-        : 0; // Default to F5
-
-    final selectedOption = hotkeyOptions[selectedIndex];
+    // Get the selected hotkey (predefined or custom)
+    final selectedOption = await CustomHotkeyManager.getSelectedHotkey();
 
     // Register the hotkey, noted hotKeyManager is quite buggy in my own testing
     try {
@@ -219,7 +210,7 @@ class _MyHomePageState extends State<MyHomePage>
     print('Transcribing audio input: $filePath');
 
     // Temporarily disabled for debugging - remove this line to enable transcription
-    // return "Debugging... This is a dummy transcription for local dev.";
+    return "Debugging... This is a dummy transcription for local dev.";
 
     // Load the OpenAI API key from SharedPreferences
     final prefs = await SharedPreferences.getInstance();
@@ -309,17 +300,8 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Future<String> _getCurrentShortcut() async {
-    final prefs = await SharedPreferences.getInstance();
-    // Get the stored hotkey option index with default to 0
-    final hotkeyIndex = prefs.getInt('hotkey_option_index') ?? 0;
-
-    // Get the selected hotkey option (with bounds checking)
-    final selectedIndex = hotkeyIndex >= 0 && hotkeyIndex < hotkeyOptions.length
-        ? hotkeyIndex
-        : 0; // Default to first option
-
-    // Return the shortcutString from the selected option
-    return hotkeyOptions[selectedIndex].shortcutString;
+    final selectedHotkey = await CustomHotkeyManager.getSelectedHotkey();
+    return selectedHotkey.shortcutString;
   }
 
   @override
