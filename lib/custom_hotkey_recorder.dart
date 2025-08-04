@@ -8,10 +8,10 @@ class CustomHotkeyRecorder extends StatefulWidget {
   final Function() onCancel;
 
   const CustomHotkeyRecorder({
-    Key? key,
+    super.key,
     required this.onHotkeyRecorded,
     required this.onCancel,
-  }) : super(key: key);
+  });
 
   @override
   _CustomHotkeyRecorderState createState() => _CustomHotkeyRecorderState();
@@ -19,8 +19,8 @@ class CustomHotkeyRecorder extends StatefulWidget {
 
 class _CustomHotkeyRecorderState extends State<CustomHotkeyRecorder> {
   bool _isRecording = false;
-  Set<LogicalKeyboardKey> _pressedKeys = {};
-  Set<HotKeyModifier> _pressedModifiers = {};
+  final Set<LogicalKeyboardKey> _pressedKeys = {};
+  final Set<HotKeyModifier> _pressedModifiers = {};
   PhysicalKeyboardKey? _lastMainKey;
   String _displayText =
       'Click "Start Recording" and press your desired key combination';

@@ -7,7 +7,7 @@ import 'package:whistle/custom_hotkey_recorder.dart';
 class ShortcutsSettingsScreen extends StatefulWidget {
   final Function? onHotkeyChanged;
 
-  ShortcutsSettingsScreen({this.onHotkeyChanged});
+  const ShortcutsSettingsScreen({super.key, this.onHotkeyChanged});
 
   @override
   _ShortcutsSettingsScreenState createState() =>
@@ -143,7 +143,9 @@ class _ShortcutsSettingsScreenState extends State<ShortcutsSettingsScreen> {
     } else if (result == 'deleteCustom') {
       // Delete and reset
       await CustomHotkeyManager.saveSelectedHotkey(hotkeyOptions[2]);
-      setState(() { _selectedHotkey = hotkeyOptions[2]; });
+      setState(() {
+        _selectedHotkey = hotkeyOptions[2];
+      });
       await _saveSettings();
     } else if (result is HotkeyOption) {
       await _selectHotkey(result);

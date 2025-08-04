@@ -23,7 +23,7 @@ class HotkeyOption {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'keyValue': key.usbHidUsage,   // persist HID usage code
+      'keyValue': key.usbHidUsage, // persist HID usage code
       'modifiers': modifiers.map((m) => m.name).toList(),
       'shortcutString': shortcutString,
       'isCustom': isCustom,
