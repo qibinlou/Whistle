@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -36,9 +37,10 @@ enum DictationStatus { idle, recording, transcribing }
 /// transcription through the active provider, and inserting text at the
 /// cursor. UI listens via [ChangeNotifier] so multiple screens stay in sync.
 class DictationController extends ChangeNotifier {
-  DictationController();
+  final AudioRecorder _recorder;
 
-  final AudioRecorder _recorder = AudioRecorder();
+  DictationController({AudioRecorder? recorder})
+      : _recorder = recorder ?? AudioRecorder();
 
   static const _statusBarChannel =
       MethodChannel('com.normadit.whistle/StatusBarController');
@@ -133,9 +135,11 @@ class DictationController extends ChangeNotifier {
         _hasMutedSystemAudio = false;
       }
 
-      final tempDir = await getTemporaryDirectory();
+      final supportDir = await getApplicationSupportDirectory();
+      await supportDir.create(recursive: true);
       final suffix = Random().nextInt(1000000).toString().padLeft(6, '0');
-      _recordingPath = '${tempDir.path}/voice_input_$suffix.wav';
+      _recordingPath = '${supportDir.path}/voice_input_$suffix.wav';
+      debugPrint('Saving recorded audio to: $_recordingPath');
       await _recorder.start(
         const RecordConfig(encoder: AudioEncoder.wav),
         path: _recordingPath!,
@@ -175,18 +179,17 @@ class DictationController extends ChangeNotifier {
 
     _setStatus(DictationStatus.transcribing);
 
-    final provider = await AppSettings.activeProvider();
-    final apiKey = await AppSettings.apiKey(provider);
-    if (apiKey.isEmpty) {
-      lastError = '${provider.displayName} API key is not set.';
-      _setStatus(DictationStatus.idle);
-      await windowManager.show();
-      await windowManager.focus();
-      onNeedsApiKey?.call();
-      return;
-    }
-
     try {
+      final provider = await AppSettings.activeProvider();
+      final apiKey = await AppSettings.apiKey(provider);
+      if (apiKey.isEmpty) {
+        lastError = '${provider.displayName} API key is not set.';
+        await windowManager.show();
+        await windowManager.focus();
+        onNeedsApiKey?.call();
+        return;
+      }
+
       final modelId = await AppSettings.selectedModelId(provider);
       final result = await provider.transcribe(
         filePath: path,
@@ -214,6 +217,14 @@ class DictationController extends ChangeNotifier {
       SoundController.playAlertSound();
     } finally {
       _setStatus(DictationStatus.idle);
+      try {
+        final file = File(path);
+        if (await file.exists()) {
+          await file.delete();
+        }
+      } catch (e) {
+        debugPrint('Error deleting temporary audio recording: $e');
+      }
     }
   }
 
