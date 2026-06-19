@@ -1,6 +1,6 @@
 # Makefile for Whistle - AI-powered dictation tool
 
-.PHONY: help get upgrade clean run run-web build dmg analyze format format-check test icons check
+.PHONY: help get upgrade clean run run-web build install dmg analyze format format-check test icons check
 
 # Default target
 .DEFAULT_GOAL := help
@@ -26,6 +26,12 @@ run-web: ## Run the application on Chrome in debug mode
 
 build: ## Build the macOS application in release mode
 	flutter build macos --release
+
+install: build ## Build and install the macOS application into the /Applications folder
+	@echo "Installing Whistle to /Applications..."
+	rm -rf /Applications/whistle.app
+	cp -R build/macos/Build/Products/Release/whistle.app /Applications/
+	@echo "Whistle successfully installed to /Applications!"
 
 dmg: build ## Package the release macOS app into a DMG installer
 	chmod +x ./installers/macos/build.sh
