@@ -17,7 +17,7 @@ void main() async {
     size: Size(960, 680),
     minimumSize: Size(720, 560),
     center: true,
-    titleBarStyle: TitleBarStyle.normal,
+    titleBarStyle: TitleBarStyle.hidden,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();

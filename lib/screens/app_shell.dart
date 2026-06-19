@@ -95,36 +95,21 @@ class _NavRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return NavigationRail(
       selectedIndex: index,
       onDestinationSelected: onSelect,
       labelType: NavigationRailLabelType.all,
       leading: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppTheme.spaceLg),
+        padding: const EdgeInsets.only(
+          top: 48.0,
+          bottom: AppTheme.spaceLg,
+        ),
         child: Column(
           children: [
-            Container(
+            Image.asset(
+              'whistle-icon.png',
               width: 40,
               height: 40,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    theme.colorScheme.primary,
-                    theme.colorScheme.secondary,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.graphic_eq_rounded,
-                  color: Colors.white, size: 22),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Whistle',
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
             ),
           ],
         ),
