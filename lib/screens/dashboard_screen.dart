@@ -77,7 +77,8 @@ class _HeroCard extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             scheme.primary,
-            Color.alphaBlend(Colors.black.withValues(alpha: 0.22), scheme.primary),
+            Color.alphaBlend(
+                Colors.black.withValues(alpha: 0.22), scheme.primary),
           ],
         ),
         boxShadow: [
@@ -237,7 +238,8 @@ class _MicButton extends StatelessWidget {
           color: recording
               ? const Color(0xFFFF5C5C)
               : Colors.white.withValues(alpha: 0.16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.4), width: 2),
+          border:
+              Border.all(color: Colors.white.withValues(alpha: 0.4), width: 2),
         ),
         child: transcribing
             ? const Padding(
@@ -301,8 +303,7 @@ class _HistorySection extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text('Recent transcriptions',
-                style: theme.textTheme.titleLarge),
+            Text('Recent transcriptions', style: theme.textTheme.titleLarge),
             const Spacer(),
             if (history.isNotEmpty)
               TextButton.icon(
@@ -375,8 +376,7 @@ class _HistoryTile extends StatelessWidget {
               children: [
                 ProviderAvatar(provider: provider, size: 24),
                 const SizedBox(width: AppTheme.spaceSm),
-                Text(provider.displayName,
-                    style: theme.textTheme.labelMedium),
+                Text(provider.displayName, style: theme.textTheme.labelMedium),
                 const SizedBox(width: 6),
                 Text(
                   '· ${_timeAgo(entry.timestamp)}',

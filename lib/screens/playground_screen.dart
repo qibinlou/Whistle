@@ -190,8 +190,7 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
                 children: [
                   Row(
                     children: [
-                      Text('Playground',
-                          style: theme.textTheme.headlineMedium),
+                      Text('Playground', style: theme.textTheme.headlineMedium),
                       const SizedBox(width: AppTheme.spaceSm),
                       _devBadge(context),
                     ],
@@ -312,8 +311,8 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
             provider: p,
             selected: _runs[p.id]!.selected,
             hasKey: _keyAvailable[p.id] ?? false,
-            onTap: () => setState(
-                () => _runs[p.id]!.selected = !_runs[p.id]!.selected),
+            onTap: () =>
+                setState(() => _runs[p.id]!.selected = !_runs[p.id]!.selected),
           ),
       ],
     );

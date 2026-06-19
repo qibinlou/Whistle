@@ -142,8 +142,8 @@ class AppTheme {
         backgroundColor: isDark ? const Color(0xFF121218) : Colors.white,
         indicatorColor: scheme.primary.withValues(alpha: 0.14),
         selectedIconTheme: IconThemeData(color: scheme.primary),
-        unselectedIconTheme:
-            IconThemeData(color: scheme.onSurfaceVariant.withValues(alpha: 0.8)),
+        unselectedIconTheme: IconThemeData(
+            color: scheme.onSurfaceVariant.withValues(alpha: 0.8)),
         selectedLabelTextStyle: textTheme.labelMedium?.copyWith(
           color: scheme.primary,
           fontWeight: FontWeight.w600,
