@@ -102,9 +102,12 @@ class OpenAiProvider extends TranscriptionProvider {
       final decoded = jsonDecode(body);
       detail = decoded['error']?['message'] ?? body;
     } catch (_) {/* keep raw body */}
-    if (status == 401)
+    if (status == 401) {
       return 'Invalid OpenAI API key. Check your key in Settings.';
-    if (status == 429) return 'OpenAI rate limit reached. Try again shortly.';
+    }
+    if (status == 429) {
+      return 'OpenAI rate limit reached. Try again shortly.';
+    }
     return 'OpenAI request failed ($status): $detail';
   }
 }

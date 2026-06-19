@@ -14,7 +14,7 @@ class CustomHotkeyRecorder extends StatefulWidget {
   });
 
   @override
-  _CustomHotkeyRecorderState createState() => _CustomHotkeyRecorderState();
+  State<CustomHotkeyRecorder> createState() => _CustomHotkeyRecorderState();
 }
 
 class _CustomHotkeyRecorderState extends State<CustomHotkeyRecorder> {

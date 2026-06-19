@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class MacOSKeyboardController {
@@ -8,7 +9,7 @@ class MacOSKeyboardController {
     try {
       await platform.invokeMethod('insertText', {"text": text});
     } on PlatformException catch (e) {
-      print("Failed to insert text: '${e.message}'.");
+      debugPrint("Failed to insert text: '${e.message}'.");
     }
   }
 }

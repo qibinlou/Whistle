@@ -110,6 +110,7 @@ class _PlaygroundScreenState extends State<PlaygroundScreen> {
   Future<void> _runComparison() async {
     if (_clipPath == null || _isComparing) return;
     await _refreshKeyAvailability();
+    if (!mounted) return;
 
     final selected = providerRegistry
         .where((p) => _runs[p.id]!.selected && (_keyAvailable[p.id] ?? false))

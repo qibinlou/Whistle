@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -58,7 +59,7 @@ class HotkeyOption {
         isCustom: json['isCustom'] as bool? ?? true,
       );
     } catch (e) {
-      print('Error parsing hotkey from JSON: $e');
+      debugPrint('Error parsing hotkey from JSON: $e');
       return null;
     }
   }
@@ -188,7 +189,7 @@ class CustomHotkeyManager {
           return option;
         }
       } catch (e) {
-        print('Error loading selected hotkey: $e');
+        debugPrint('Error loading selected hotkey: $e');
       }
     }
     // Return default hotkey if none is saved or loading fails

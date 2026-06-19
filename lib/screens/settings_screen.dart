@@ -209,15 +209,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (context) => SimpleDialog(
         title: const Text('Select keyboard shortcut'),
-        children: List.generate(
-          hotkeyOptions.length,
-          (index) => RadioListTile<int>(
-            value: index,
+        children: [
+          RadioGroup<int>(
             groupValue: _hotkeyIndex,
-            title: Text(hotkeyOptions[index].name),
             onChanged: (v) => Navigator.pop(context, v),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(
+                hotkeyOptions.length,
+                (index) => RadioListTile<int>(
+                  value: index,
+                  title: Text(hotkeyOptions[index].name),
+                ),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
     if (result == null || result == _hotkeyIndex) return;

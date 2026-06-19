@@ -96,8 +96,9 @@ class ElevenLabsProvider extends TranscriptionProvider {
     if (status == 401) {
       return 'Invalid ElevenLabs API key. Check your key in Settings.';
     }
-    if (status == 429)
+    if (status == 429) {
       return 'ElevenLabs rate limit reached. Try again shortly.';
+    }
     return 'ElevenLabs request failed ($status): $detail';
   }
 }
