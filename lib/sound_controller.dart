@@ -24,4 +24,11 @@ final class SoundController {
       mode: PlayerMode.lowLatency,
     );
   }
+
+  static Future<void> playAlertSound() async {
+    return _audioPlayer.play(
+      DeviceFileSource(SOUND_ALERT),
+      mode: PlayerMode.lowLatency,
+    );
+  }
 }
